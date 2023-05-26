@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  main-api:
+    build: ./.
+    restart: always
+    working_dir: /cuttly
+    command: daphne cuttly.asgi:application -b 0.0.0.0
+    volumes:
+      - static_volume:/cuttly/static
+    environment:
+      - HOST=http://localhost:8000
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=cuttly-dev
+      - SQL_USER=cuttlyuser
+      - SQL_PASSWORD=cuttlysecret
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=cuttly-dev
+      - POSTGRES_USER=cuttlyuser
+      - POSTGRES_PASSWORD=cuttlysecret
+  redis:
+    image: redis:alpine
+    restart: always
+
+volumes:
+  postgres_data:
+  static_volume:
