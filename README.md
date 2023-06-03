@@ -1,7 +1,7 @@
 # lab3
 Пономаренко Нікіта Євгенович КВ-21мп ЛР3 Організація виконання асинхронних задач Web-додатка Скорочення URL-посилань
 
-https://docs.google.com/document/d/1g9JFNBCbH4q8Qniy8_yneX6dMoew_KY5/edit
+[https://docs.google.com/document/d/1g9JFNBCbH4q8Qniy8_yneX6dMoew_KY5/edit](https://docs.google.com/document/d/1Qt6g4aXvZRdXtwZwCjxd3ptu8Kft8at9UwKXw0EkwY8/edit?usp=sharing)
 
 
 # Docker
