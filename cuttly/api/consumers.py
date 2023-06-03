@@ -6,10 +6,11 @@ from djangochannelsrestframework.mixins import (
     CreateModelMixin,
     RetrieveModelMixin,
 )
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import URL, User
 from .consumer_serializer import URLSerializer
-from .consumer_permissions import URLPermissions, is_user_logged_in
+from .consumer_permissions import URLPermissions, is_user_logged_in, is_user_admin
 from cuttly.settings import HOST
 
 
@@ -25,6 +26,18 @@ def update_user_decr(user):
         User.objects.filter(pk=user.pk).update(is_online=False)
 
 
+@database_sync_to_async
+def update_admin_incr(user):
+    if is_user_logged_in(user) and is_user_admin(user):
+        User.objects.filter(pk=user.pk).update(is_online=True)
+
+
+@database_sync_to_async
+def update_admin_decr(user):
+    if is_user_logged_in(user) and is_user_admin(user):
+        User.objects.filter(pk=user.pk).update(is_online=False)
+
+
 class ActivityStatusConsumer:
 
     async def connect(self):
@@ -33,6 +46,29 @@ class ActivityStatusConsumer:
 
     async def disconnect(self, code):
         await update_user_decr(self.scope['user'])
+
+
+class AdminConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self):
+        await self.accept()
+        await update_user_incr(self.scope['user'])
+        await self.channel_layer.group_add(
+            'admin',
+            self.channel_name,
+        )
+
+    async def disconnect(self, code):
+        await update_user_decr(self.scope['user'])
+
+    async def receive(self, text_data=None, bytes_data=None):
+        print('lol')
+        await self.receive(text_data, bytes_data)
+
+    async def send_message(self, event):
+        print('kek')
+        message = event['message']
+        await self.send(text_data=message)
 
 
 class URLConsumer(ActivityStatusConsumer, GenericAsyncAPIConsumer, RetrieveModelMixin, ListModelMixin, CreateModelMixin):

@@ -1,8 +1,14 @@
 from djangochannelsrestframework.permissions import BasePermission
 from django.contrib.auth.models import AnonymousUser
 
+from .models import User
+
 def is_user_logged_in(user):
     return not isinstance(user, AnonymousUser)
+
+def is_user_admin(user):
+    if isinstance(user, User):
+        return user.is_superuser
 
 
 class URLPermissions(BasePermission):

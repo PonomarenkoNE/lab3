@@ -21,6 +21,25 @@ services:
     depends_on:
       - db
       - redis
+      - celery
+  celery:
+    build: ./.
+    restart: always
+    working_dir: /cuttly
+    command: celery -A cuttly.celery_main.app worker --loglevel=info --beat
+    volumes:
+      - .:/app
+    environment:
+      - HOST=http://localhost:8000
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=cuttly-dev
+      - SQL_USER=cuttlyuser
+      - SQL_PASSWORD=cuttlysecret
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    depends_on:
+      - redis
+      - db
   db:
     image: postgres
     volumes:
@@ -32,6 +51,7 @@ services:
   redis:
     image: redis:alpine
     restart: always
+
 
 volumes:
   postgres_data:

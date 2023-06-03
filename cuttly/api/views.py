@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 
 
 from .serializers import *
+from .tasks import call_task
+
 
 class UserCreationView(GenericAPIView):
     """
@@ -46,9 +48,9 @@ class URLView(viewsets.ViewSet, GenericAPIView):
         user = request.user
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
-            serializer.validated_data['creator'] = user
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            serializer.validated_data['creator'] = user.id
+            call_task(serializer.validated_data)
+            return Response("Cutted URL you will receive on your email", status=201)
         return Response({"ERR_CODE": "BODY_NOT_VALID", "info": "Body is not full or invalid"}, status=400)
 
     def get(self, request, id):

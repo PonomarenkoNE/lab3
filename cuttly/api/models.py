@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 
 from cuttly.settings import HOST
 
+
 class User(AbstractUser):
     username_validator = UnicodeUsernameValidator()
     is_online = models.BooleanField(default=False)
@@ -21,6 +22,7 @@ class User(AbstractUser):
             'unique': _("A user with that username already exists."),
         },
     )
+    email = models.EmailField(_("email address"))
 
     def is_owner(self, id):
         if self.url_set.filter(id=id).first():

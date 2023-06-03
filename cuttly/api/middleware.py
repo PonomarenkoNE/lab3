@@ -38,7 +38,7 @@ class TokenAuthMiddleware(BaseMiddleware):
         close_old_connections()
         try:
             jwt_key = [item for item in scope['headers'] if b'authorization' in item][0][1].decode('utf-8')
-        except ValueError:
+        except Exception:
             jwt_key = None
 
         print(jwt_key)

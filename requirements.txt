@@ -58,3 +58,4 @@ zope.interface==6.0
 psycopg2
 drf-yasg
 tzdata
+celery
